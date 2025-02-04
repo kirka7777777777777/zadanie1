@@ -36,9 +36,13 @@ Vue.component('product', {
             
             <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">Add to cart</button>
             <button v-on:click="removeFromCart">Remove from cart</button>
+            <product-tabs :reviewText="reviewText"></product-tabs>
             <div>
     <product-review @review-submitted="addReview"></product-review>
-            <product-tabs></product-tabs>
+    <div>
+</div>
+
+            
         </div>
         </div>  
  `, data() {
@@ -52,6 +56,8 @@ Vue.component('product', {
             inStock: true,
             inventory: 100,
             onSale: true,
+
+            reviewText: [],
             variants: [
                 {
                     variantId: 2234,
@@ -95,7 +101,7 @@ Vue.component('product', {
             }
         },
         addReview(productReview) {
-            this.reviews.push(productReview)
+            this.reviewText.push(productReview)
         }
     },
     computed: {
@@ -108,7 +114,7 @@ Vue.component('product', {
         inStock(){
             return this.variants[this.selectedVariant].variantQuantity
         },
-        sale() { // Новое вычисляемое свойство
+        sale() {
             return this.onSale
                 ? `${this.brand} ${this.product} сейчас на распродаже!`
                 : `К сожалению, сейчас нет распродажи на ${this.brand} ${this.product}.`;
@@ -135,6 +141,7 @@ Vue.component('product-details', {
  `, data() {
         return {
             details: ['80% cotton', '20% polyester', 'Gender-neutral'],
+
         }
     }
 
@@ -193,11 +200,12 @@ Vue.component('product-review', {
             rating: null,
             errors: [],
             recommendation: null,
+
         }
     },
     methods:{
         onSubmit() {
-            if(this.name && this.review && this.rating) {
+            if(this.name && this.review && this.rating && this.recommendation) {
                 let productReview = {
                     name: this.name,
                     review: this.review,
@@ -216,23 +224,20 @@ Vue.component('product-review', {
                 if (!this.recommendation) this.errors.push("Recommendation required.")
             }
         },
-        addReview(productReview) {
-            this.reviews.push(productReview)
-        }
+
 
     }
 
 })
 Vue.component('product-tabs', {
     props: {
-        reviews: {
+        reviewText: {
             type: Array,
             required: false
         }
     },
-
     template: `
-    <div>   
+   <div>   
        <ul>
          <span class="tab"
                :class="{ activeTab: selectedTab === tab }"
@@ -240,23 +245,33 @@ Vue.component('product-tabs', {
                @click="selectedTab = tab"
          >{{ tab }}</span>
        </ul>
-       <div>
-         <p v-if="!reviews.length">There are no reviews yet.</p>
+       <div v-show="selectedTab === 'reviewText'">
+         <p v-if="!reviewText.length">There are no reviews yet.</p>
          <ul>
-           <li v-for="review in reviews">
+           <li v-for="review in reviewText">
            <p>{{ review.name }}</p>
            <p>Rating: {{ review.rating }}</p>
            <p>{{ review.review }}</p>
            </li>
          </ul>
        </div>
+       <div v-show="selectedTab === 'Make a reviewText'">
+       <product-review @review-submitted="addReview"></product-review>
+</div>
      </div>
 
  `,
     data() {
         return {
-            tabs: ['Reviews', 'Make a Review'],
-            selectedTab: 'Reviews'  // устанавливается с помощью @click
+            tabs: ['ReviewText', 'Make a Review'],
+            selectedTab: 'ReviewText'  // устанавливается с помощью @click
+
+
+        }
+    },
+    methods : {
+        addReview(productReview) {
+            this.reviewText.push(productReview)
         }
     }
 })
@@ -269,7 +284,7 @@ let app = new Vue({
     data: {
         premium: true,
         cart: [],
-        // reviews: [],
+        reviewText: []
     },
     methods: {
         updateCart(id) {
@@ -284,7 +299,7 @@ let app = new Vue({
         },
         addReview(productReview) {
 
-            this.reviews.push(productReview)
+            this.reviewText.push(productReview)
         }
 
     }
