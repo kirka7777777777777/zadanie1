@@ -12,9 +12,7 @@
 </head>
 <body>
 <div id="app">
-    <div class="cart">
-        <p>Cart({{ cart }})</p>
-    </div>
+
 <!--    <div class="product">-->
 <!--        <div class="product-image">-->
 <!--            <img :src="image" :alt="altText" />-->
@@ -51,7 +49,10 @@
 
 
 <!--        </div>-->
-    <product :premium="premium" @add-to-cart="updateCart"></product>
+    <div class="cart">
+        <p>Cart({{ cart.length }})</p>
+    </div>
+    <product :premium="premium" @add-to-cart="updateCart" @remove-from-cart="updateRemoveFromCart"></product>
 
 </div>
 </body>

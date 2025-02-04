@@ -5,7 +5,6 @@ Vue.component('product', {
         premium: {
             type: Boolean,
             required: true,
-
         }
     },
     template: `
@@ -23,9 +22,6 @@ Vue.component('product', {
             <span v-if="onSale">On Sale</span>
             <p>{{ sale }}</p>
             <product-details></product-details>
-<!--            <ul>-->
-<!--                <li v-for="detail in details">{{ detail }}</li>-->
-<!--            </ul>-->
             <p>Shipping: {{ shipping }}</p> 
             <div
                     class="color-box"
@@ -40,8 +36,10 @@ Vue.component('product', {
             
             <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">Add to cart</button>
             <button v-on:click="removeFromCart">Remove from cart</button>
+            <div>
+    <product-review @review-submitted="addReview"></product-review>
+            
         </div>
-
         </div>  
  `, data() {
         return {
@@ -54,7 +52,6 @@ Vue.component('product', {
             inStock: true,
             inventory: 100,
             onSale: true,
-            // details: ['80% cotton', '20% polyester', 'Gender-neutral'],
             variants: [
                 {
                     variantId: 2234,
@@ -70,8 +67,6 @@ Vue.component('product', {
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-
-
         }
     },
     methods: {
@@ -79,23 +74,29 @@ Vue.component('product', {
             this.cart += 1;
         },
         addToCart() {
-            this.$emit('add-to-cart');
+            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
         },
         updateProduct(index) {
             this.selectedVariant = index;
             console.log(index);
         },
         removeFromCart() {
+            this.$emit('remove-from-cart')
             if (this.cart > 0) {
-                this.cart -= 1
+                this.cart -= 1;
             }
         },
         selectSize(size) {
             console.log(`Size selected: ${size}`);
         },
-
-
-
+        updateRemoveFromCart() {
+            if (this.cart > 0) {
+                this.cart -= 1;
+            }
+        },
+        addReview(productReview) {
+            this.reviews.push(productReview)
+        }
     },
     computed: {
         title() {
@@ -130,8 +131,7 @@ Vue.component('product-details', {
     template: `
             <ul>
                 <li v-for="detail in details">{{ detail }}</li>
-            </ul>   
-            
+            </ul>
  `, data() {
         return {
             details: ['80% cotton', '20% polyester', 'Gender-neutral'],
@@ -140,19 +140,108 @@ Vue.component('product-details', {
 
 })
 
+
+Vue.component('product-review', {
+    template: `
+<form class="review-form" @submit.prevent="onSubmit">
+ <p>
+   <label for="name">Name:</label>
+   <input id="name" v-model="name" placeholder="name">
+ </p>
+
+ <p>
+   <label for="review">Review:</label>
+   <textarea id="review" v-model="review"></textarea>
+ </p>
+
+ <p>
+   <label for="rating">Rating:</label>
+   <select id="rating" v-model.number="rating">
+     <option>5</option>
+     <option>4</option>
+     <option>3</option>
+     <option>2</option>
+     <option>1</option>
+   </select>
+ </p>
+
+ <p>
+   <input type="submit" value="Submit"> 
+ </p>
+
+</form>
+    
+   <div>
+<h2>Reviews</h2>
+<p v-if="!reviews.length">There are no reviews yet.</p>
+<ul>
+  <li v-for="review in reviews">
+  <p>{{ review.name }}</p>
+  <p>Rating: {{ review.rating }}</p>
+  <p>{{ review.review }}</p>
+  </li>
+</ul>
+</div>
+
+ `,
+    data() {
+        return {
+            name: null,
+            reviews: [],
+            rating: null
+        }
+    },
+    methods:{
+        onSubmit() {
+            let productReview = {
+                name: this.name,
+                reviews: this.reviews,
+                rating: this.rating
+            }
+            this.$emit('review-submitted', productReview)
+            this.name = null
+            this.reviews = null
+            this.rating = null
+        },
+        addReview(productReview) {
+            this.reviews.push(productReview)
+        }
+
+    }
+
+})
+
+
 let app = new Vue({
     el: '#app',
     data: {
         premium: true,
-        cart: 0,
+        cart: [],
+        // reviews: [],
+    },
+    methods: {
+        updateCart(id) {
+
+            this.cart.push(id);
+            console.log(this.cart)
+        },
+        updateRemoveFromCart(id) {
+            if (this.cart.length > 0) {
+                 this.cart.pop(id);
+            }
+        },
+        addReview(productReview) {
+
+            this.reviews.push(productReview)
+        }
+
     }
-},
-    {
-        el: '#app'
-    })
+})
 
 
-console.log(app)
+
+
+
 
 //
 //
