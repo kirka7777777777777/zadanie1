@@ -21,6 +21,7 @@ Vue.component('product', {
             <p v-else :class="{outOfStock: !inStock}">Out of stock</p>
             <span v-if="onSale">On Sale</span>
             <p>{{ sale }}</p>
+            <product-details></product-details>
 <!--            <ul>-->
 <!--                <li v-for="detail in details">{{ detail }}</li>-->
 <!--            </ul>-->
@@ -120,11 +121,10 @@ Vue.component('product', {
 
 
 
-Vue.component('details', {
+Vue.component('product-details', {
     template: `
-            <p>sdf</p>
-            <ul v-for="detail in details">
-                <li >{{ details }}</li>
+            <ul>
+                <li v-for="detail in details">{{ detail }}</li>
             </ul>   
             
  `, data() {
