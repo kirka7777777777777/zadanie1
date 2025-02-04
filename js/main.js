@@ -4,7 +4,8 @@ Vue.component('product', {
     props: {
         premium: {
             type: Boolean,
-            required: true
+            required: true,
+
         }
     },
     template: `
@@ -36,9 +37,7 @@ Vue.component('product', {
             <div v-for="size in sizes" @click="selectSize(size)">
                 <p>{{ size }}</p>
             </div>
-            <div class="cart">
-                <p>Cart({{ cart }})</p>
-            </div>
+            
             <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">Add to cart</button>
             <button v-on:click="removeFromCart">Remove from cart</button>
         </div>
@@ -71,13 +70,16 @@ Vue.component('product', {
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-            cart: 0,
+
 
         }
     },
     methods: {
+        updateCart() {
+            this.cart += 1;
+        },
         addToCart() {
-            this.cart += 1
+            this.$emit('add-to-cart');
         },
         updateProduct(index) {
             this.selectedVariant = index;
@@ -90,7 +92,10 @@ Vue.component('product', {
         },
         selectSize(size) {
             console.log(`Size selected: ${size}`);
-        }
+        },
+
+
+
     },
     computed: {
         title() {
@@ -138,7 +143,8 @@ Vue.component('product-details', {
 let app = new Vue({
     el: '#app',
     data: {
-        premium: true
+        premium: true,
+        cart: 0,
     }
 },
     {
