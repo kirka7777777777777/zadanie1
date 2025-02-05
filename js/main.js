@@ -32,6 +32,7 @@ Vue.component('product-tabs', {
                             <p>Rating: {{ review.rating }}</p>
                             <p>{{ review.review }}</p>
                             <p>Recommended: {{ review.recommendation }}</p>
+                            <p>Date: {{ review.date }}</p>
                         </li>
                     </ul>
                 </div>
@@ -52,7 +53,8 @@ Vue.component('product-tabs', {
     data() {
         return {
             tabs: ['Reviews', 'Make a Review', 'Shipping', 'Details'],
-            selectedTab: 'Reviews'
+            selectedTab: 'Reviews',
+
         }
     }
 });
@@ -105,7 +107,8 @@ Vue.component('product-review', {
             review: '',
             rating: null,
             recommendation: '',
-            errors: []
+            errors: [],
+            date: ''
         }
     },
     methods: {
@@ -116,7 +119,8 @@ Vue.component('product-review', {
                     name: this.name,
                     review: this.review,
                     rating: this.rating,
-                    recommendation: this.recommendation
+                    recommendation: this.recommendation,
+                    date: new Date().toLocaleDateString()
                 };
                 eventBus.$emit('review-submitted', productReview);
                 this.resetForm();
@@ -173,6 +177,8 @@ Vue.component('product', {
                     <a :href="link">More products like this</a>
                     <p v-if="inStock">In stock</p>
                     <p v-else style="text-decoration: line-through">Out of Stock</p>
+                    <p>Quantity available: {{ variants[selectedVariant].variantQuantity }}</p>
+<!--                    <p>quantity available: {{ veriants.[selectedVariant].variantQuantity}}</p>-->
                     <span v-if="onSale"> On Sale </span>
                     <br><br>
                     <p>{{ sale }}</p>
@@ -219,7 +225,7 @@ Vue.component('product', {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
+                    variantQuantity: 5
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
